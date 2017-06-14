@@ -10,32 +10,11 @@ var listData = [];
 var maxNum =1;
 // cache the latest story ids
 api.__ids__ = {};
-function initData(){
-	
-// ['top', 'new', 'show', 'ask', 'job'].forEach(type => {
-//     api.child(`${type}stories`).on('value', snapshot =>{
-//         api.__ids__[type] = snapshot.val()
-//     })
-// });
 
-	['top', 'new', 'show', 'ask', 'job'].forEach(type => {
-		return new Promise(function(resolve,reject){
-			api.child(`${type}stories`).on('value', snapshot =>{
-		        api.__ids__[type] = snapshot.val()
-		        resolve()
-		    })
-		}).then(function(){
-			warmCache()
-		})
-	});
-}
-
-//warm the front page cache every 15 mins
-//setTimeout(warmCache, 2000);
-function warmCache(type) {
+function warmCache(type,page) {
 	//maxNum=Math.ceil(api.__ids__.top.length/30);
 	
-    getItems((api.__ids__[type] || [] ).slice(0, 30));
+    getItems((api.__ids__[type] || [] ).slice((page-1)*20, page*20));
     setTimeout(warmCache, 1000*15*60);
 };
 function getItems(ids){

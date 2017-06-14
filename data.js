@@ -1,0 +1,79 @@
+var listData=[
+{
+"by":"bpierre",
+"descendants":48,
+"id":14452832,
+"kids":"Array[27]",
+"score":657,
+"time":1496241255,
+"title":"Fireflies",
+"type":"story",
+"url":"http://ncase.me/fireflies/"
+},
+{
+"by":"MBCook",
+"descendants":109,
+"id":14456242,
+"kids":"Array[23]",
+"score":251,
+"time":1496267687,
+"title":"Paul Allen's new rocket-launching plane",
+"type":"story",
+"url":"https://arstechnica.com/science/2017/05/paul-allen-showed-off-his-new-rocket-launching-plane-today-it-is-big/"
+},
+{
+"by":"turingbook",
+"descendants":29,
+"id":14453962,
+"kids":"Array[8]",
+"score":87,
+"time":1496249405,
+"title":"Compiler Optimizations are Awesome",
+"type":"story",
+"url":"https://blog.regehr.org/archives/1515"
+},
+{
+"by":"peter_d_sherman",
+"descendants":25,
+"id":14450945,
+"kids":"Array[10]",
+"score":213,
+"time":1496216102,
+"title":"Build an 8-Bit Computer from Scratch",
+"type":"story",
+"url":"https://eater.net/"}
+,
+{
+"by":"hecubus",
+"descendants":4,
+"id":14454194,
+"kids":"Array[1]",
+"score":42,
+"time":1496251058,
+"title":"At Amazon’s Bookstore, No Coffee but All the Data You Can Drink",
+"type":"story",
+"url":"https://www.nytimes.com/2017/05/27/opinion/sunday/at-amazons-bookstore-no-coffee-but-all-the-data-you-can-drink.html"
+},
+{
+"by":"robin_reala",
+"descendants":4,
+"id":14458071,
+"kids":"Array[4]",
+"score":23,
+"time":1496292709,
+"title":"Running Clang-Tidy on the Linux Kernel",
+"type":"story",
+"url":"http://nickdesaulniers.github.io/blog/2017/05/31/running-clang-tidy-on-the-linux-kernel/"
+},
+{
+"by":"kiyanwang",
+"descendants":1,
+"id":14458339,
+"kids":"Array[1]",
+"score":5,
+"time":1496297684,
+"title":"How Basic Performance Analysis Saved Us Millions",
+"type":"story",
+"url":"https://blog.heapanalytics.com/basic-performance-analysis-saved-us-millions/?ct=t%28DevOpsLinks_62%29"
+}
+]
