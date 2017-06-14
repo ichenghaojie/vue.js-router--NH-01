@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Zero edition of Vue-HN</title>
+    <script src="./firebase.js"></script>
+    <script src="./vue.js" charset="utf-8"></script>
+   <script src="./vue-router.js" charset="utf-8"></script>
+     <!--<script src="./vuex.js" charset="utf-8"></script>-->
+    <script src="./api.js"></script>
+    <!--<script src="./sync.js"></script>-->
+    <!--<script src="./data.js"></script>-->
+    <!-- <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,700' rel='stylesheet' type='text/css'> -->
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+  <div id="app">
+        <div class="header">
+          <div class="inner">
+            <a href="javascript:;"><img src="img/logo.png" alt="logo" class="logo"></a> 
+            <router-link to="/top/1" class="">Top</router-link>
+            <router-link to="/new/1" class="">New</router-link>
+            <router-link to="/show/1" class="">Show</router-link>
+            <router-link to="/ask/1" class="">Ask</router-link>
+            <router-link to="/job/1" class="">Jobs</router-link>
+        
+            <a href="https://github.com/vuejs/vue-hackernews-2.0" target="_blank" class="github">
+                        Bulid with Vue.js
+            </a>
+          </div>
+        </div>
+        <!-- <item-test></item-test> -->
+        <router-view></router-view>
+  </div>
+
+    <script type="text/x-template" id="itemlist" >
+    <div class="top view">
+      <div class="nav">
+        <div class = "pages">
+
+        <router-link v-if="(page-1)!=0" :to="'/top/'+(page-1)" v-on:click.native='page-=1;updateItems(page)'>&lt; prev</router-link>
+        <a v-else class = "disabled">&lt; prev</a>
+        <span>{{page}}/{{maxPage}}</span>
+        <router-link v-if="hasMore" :to="'/top/'+(page+1)" v-on:click.native='page+=1;updateItems(page)'>more &gt;</router-link>
+        <a v-else class = "disabled">more &gt;</a>
+        </div>
+      </div>
+      <div class="news-list">
+        <ul>
+          <li class="news-item" v-for="item in items" style="">
+            <span class="score">{{item.score}}</span>
+            <span class="title">
+              <!--<router-link :to=item.url target="_blank">{{item.title}}</router-link>-->
+              <a :href='item.url' target="_blank">{{item.title}}</a>
+              <span class="host">{{item.url|urlHost}}</span>
+            </span>
+            <br>
+            <span class='meta'>
+              <!--<span class="by">by<a href='/user/'  class="">{{item.by}}</a></span>-->
+             
+              <span class="by">by
+                <router-link :to="'/user/'+item.by">{{item.by}}</router-link>
+               
+                </span>
+              <span class="time">{{item.time|timeAgo}} ago</span>
+              <span class="comments-link">| 
+              <router-link :to="'/item/'+item.id" class="">{{item.descendants}} comments</router-link>
+              </span>
+            </span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    </script>
+     
+
+    <script type="text/x-template" id="userview">
+    <div class="user-view view">
+      <template v-if="userPage">
+        <h1>User : {{user.id}}</h1>
+        <ul class="meta">
+          <li><span class="label">Created:</span> {{user.created|timeAgo}} ago</li> 
+          <li><span class="label">Karma:</span> {{user.karma}}</li> 
+        </ul> 
+        <p class="links">
+          <a :href="'https://news.ycombinator.com/submitted?id='+user.id">submissions</a> |
+          <a :href="'https://news.ycombinator.com/threads?id='+user.id">comments</a>
+        </p>
+      </template>
+    </div>
+    </script> 
+    
+    <script type="text/x-template" id="itemview">
+    <div class="item-view view">
+        <div class="item-view-header">
+            <a :href="item.url" target="_blank">
+                <h1>{{item.title}}</h1>
+            </a>
+            <span class="host">{{item.url|urlHost}}</span>
+            <p class="meta">{{item.score}} points| by <router-link :to="'/user/'+item.by" class="">{{item.by}}</router-link>{{item.time|timeAgo}} ago </p>
+        </div>
+        <div class="item-view-comments">
+            <p class="item-view-comments-header">{{item.descendants}} comments</p>
+            <ul class="comment-children" v-if='item.kids'>
+            <commentView v-for='id in item.kids' :id="id"></commentView>
+            </ul>
+        </div>
+    </div>
+    </script>
+    <script type="text/x-template" id="commentview">
+        <li class="comment">
+            <div class="by">
+              <router-link :to="'/user/'+comment.by">{{comment.by}}</router-link>
+              
+              {{comment.time|timeAgo}} ago
+              <span v-if='comment.kids&&comment.kids.length!=0'>
+                  |<a class="expand" @click='toggle'>
+                    {{comment.kids.length | pluralize}} {{open? 'collapse' : 'expand'}}
+                  </a>
+              </span>
+            </div>
+            <div class="text" v-html='comment.text'>
+            </div>
+            <ul v-if='comment.kids&&comment.kids.length!=0' class="comment-children" v-show="open">
+            <commentView v-for='id in comment.kids' :id="id"></commentView>
+            </ul>
+        </li>
+    </script>
+
+    <!-- <div class="item-view view">
+        <div class="item-view-header">
+            <a href="http://pbat.ch/proj/voc/" target="_blank">
+                <h1>Voc: a physical model of the vocal tract, written in ANSI C</h1>
+            </a>
+            <span class="host">(pbat.ch)</span>
+            <p class="meta">51 points| by <a href="/user/adamnemecek" class="">adamnemecek</a>3 hours ago</p>
+        </div>
+        <div class="item-view-comments">
+            <p class="item-view-comments-header">11 comments</p>
+            <ul class="comment-children">
+                <li class="comment">
+                    <div class="by">
+                      <a href="/user/zebproj" class="">zebproj</a> 
+                      36 minutes ago
+                      <span>
+                        | <a class="expand">
+                            1 reply collapse 
+                          </a>
+                      </span>
+                    </div>
+                    <div class="text">Hey! I'm the author of this thing. Let me know if you have any questions about it.
+                        <p>FYI, the generated C code is now part of the dev branch of Soundpipe here: 
+                        <a href="http://pbat.ch/proj/soundpipe.html"rel="nofollow">http://pbat.ch/proj/soundpipe.html</a>
+                        , my music DSP library, and it has alsomade it's way into the develop branch of AudioKit: 
+                        <a href="http://audiokit.io" rel="nofollow">http://audiokit.io</a>.
+                        </p>
+                        <p>Also, check out the original implementation Pink Trombone: 
+                        <a href="https://dood.al/pinktrombone/"rel="nofollow">https://dood.al/pinktrombone/</a>
+                        . It's the perfect interface for this kind ofmodel.
+                        </p>
+                    </div>
+                    <ul class="comment-children">
+                        <li class="comment">
+                            <div class="by">
+                            <a href="/user/TheNewAndy" class="">TheNewAndy</a> 12 minutes ago
+                            </div>
+                            <div class="text">
+                                Funnily enough, I also made a C90 port of the same code, and also named it "voc". Here is anoldish version:
+                                <p><a href="http://ultra-premium.com/scratch/voc.zip" rel="nofollow">http://ultra-premium.com/scratch/voc.zip</a></p>
+                                <p>I would completely expect yours to be better in all ways (mine was basically a line for line
+                                    transcription of all the audio and stripping out the UI stuff, where as you actually
+                                    went to the effort of understanding the thing being ported).</p>
+                            </div>
+                            <ul class="comment-children"></ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+ -->
+</body>
+    <script src="./app.js"></script>
+</html>
+
