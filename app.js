@@ -7,7 +7,7 @@ var itemList = Vue.extend({
         	items:listData,
         	page:1,
         	allItem:api.__ids__.top,
-            maxPage: 1,
+            maxPage:1,
             type:'top'
         } 
     },
@@ -22,25 +22,42 @@ var itemList = Vue.extend({
     		return this.page<this.maxPage
     	}
     },
+
+    beforeRouteEnter: function(to, from, next) {
+		console.log('enter',to.path);
+		next(vm => {
+			console.log('path', vm.$route.path)
+			vm.getData();
+		});
+	},
+	beforeRouteUpdate: function(to, from, next) {
+		console.log('update',to.path);
+        next();
+	},
     created: function(){
-    	this.type = this.$route.fullPath.split('/')[1];
-    	this.page = this.$route.params.id;
-    	console.log(this.type);
-    	console.log(this.page);
-    	var self = this;
-    	return new Promise(function(resolve,reject){
-			api.child(self.type+'stories').on('value', snapshot =>{
-		        api.__ids__[self.type] = snapshot.val()
-		        resolve()
-		    })
-		}).then(function(){
-			self.maxPage=Math.ceil(api.__ids__[self.type].length/20);
-			warmCache(self.type,self.page);
-		})
+    	this.getData();
     },
     methods:{
     	updateItems:function (num){
+			console.log(num);
 			getItems((api.__ids__[this.type] || [] ).slice((num-1)*20, num*20));
+		},
+		getData:function(){
+			console.log(this.$route);
+			this.type = this.$route.fullPath.split('/')[1];
+			this.page = this.$route.params.id;
+			console.log(this.type);
+			console.log(this.page);
+			var self = this;
+			return new Promise(function(resolve,reject){
+				api.child(self.type+'stories').on('value', snapshot =>{
+					api.__ids__[self.type] = snapshot.val()
+					resolve()
+				})
+			}).then(function(){
+				self.maxPage=Math.ceil(api.__ids__[self.type].length/20);
+				warmCache(self.type,self.page);
+			})
 		}
 
     },
