@@ -8,7 +8,9 @@ var itemList = Vue.extend({
         	page:1,
         	allItem:api.__ids__.top,
             maxPage:1,
-            type:'top'
+            type:'top',
+            transition:'slide-left',
+            dispaly:1
         } 
     },
     computed: {
@@ -38,14 +40,18 @@ var itemList = Vue.extend({
     	this.getData();
     },
     methods:{
-    	updateItems:function (num){
-			console.log(num);
-			getItems((api.__ids__[this.type] || [] ).slice((num-1)*20, num*20));
+    	updateItems:function (start,end){
+            this.transition = start>end?'slide-left':'slide-right';
+            this.page=end;
+   
+            console.log(start>end,this.transition);
+			getItems((api.__ids__[this.type] || [] ).slice((end-1)*20, end*20));
 		},
 		getData:function(){
 			console.log(this.$route);
 			this.type = this.$route.fullPath.split('/')[1];
-			this.page = this.$route.params.id;
+			this.page = this.$route.params.id? this.$route.params.id:1 ;
+
 			console.log(this.type);
 			console.log(this.page);
 			var self = this;
@@ -255,14 +261,14 @@ var itemView = Vue.extend({
 const router = new VueRouter({
 	routes: [
 	    // 动态路径参数 以冒号开头
-	    { path: '/item/:id', component: itemView },
-	    { path: '/user/:id', component: userList },
-	    { path: '/top/:id', component:itemList},
-	    { path:'/new/:id',component:itemList},
-	    { path:'/show/:id',component:itemList},
-	    { path:'/ask/:id',component:itemList},
-	    { path:'/job/:id',component:itemList},
-	    { path: '/', redirect: '/top/1' }
+	    { path: '/item/:id(\\d+)?', component: itemView },
+	    { path: '/user/:id(\\d+)?', component: userList },
+	    { path: '/top/:id(\\d+)?', component:itemList},
+	    { path:'/new/:id(\\d+)?',component:itemList},
+	    { path:'/show/:id(\\d+)?',component:itemList},
+	    { path:'/ask/:id(\\d+)?',component:itemList},
+	    { path:'/job/:id(\\d+)?',component:itemList},
+	    { path: '/', redirect: '/top' }
 	]
 
 });
